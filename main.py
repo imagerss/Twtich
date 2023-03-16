@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from time import sleep
 import time
 import math
+from selenium.webdriver.chrome.options import Options
 from PIL import Image
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
@@ -11,11 +12,18 @@ import requests
 from discord import Webhook, RequestsWebhookAdapter
 #player-overlay-mature-accept
 # Set the Chrome options to start the browser maximized
+CHROMEDRIVER_PATH = '/usr/local/bin/chromedriver'
+WINDOW_SIZE = "1920,1080"
+chrome_options = Options()
 chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument('--start-maximized')
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--window-size=%s" % WINDOW_SIZE)
+chrome_options.add_argument('--no-sandbox')
 
 # Start the Chrome browser with the options
-driver = webdriver.Chrome(options=chrome_options)
+driver = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH,
+                          chrome_options=chrome_options
+                         )
 
 # Navigate to the Twitch channel and wait for the page to load
 driver.get('https://www.twitch.tv/videos/1766004801')
