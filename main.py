@@ -20,7 +20,7 @@ chrome_options.add_argument("--window-size=1920,1080")
 driver = webdriver.Chrome(options=chrome_options, executable_path='/usr/local/bin/chromedriver')
 
 # Navigate to the Twitch channel and wait for the page to load
-driver.get('https://www.twitch.tv/videos/1766004801')
+driver.get('https://www.twitch.tv/lpl')
 sleep(5)  # Wait for 5 seconds to allow the page to fully load
 
 # Find and click the "Zaakceptuj pliki cookie" button to dismiss the cookie banner
@@ -79,7 +79,7 @@ while True:
     print("Blue pixels:", blue_count)
     print("Cooldown:", send_cooldown)
 
-    if red_count>40 and send_cooldown==0:
+    if red_count>20 and send_cooldown==0:
         webhook = SyncWebhook.from_url("https://discord.com/api/webhooks/1085887517292761189/ctEiIk2FHrHm7SnQeFGjlZNCNFNAA0hmUi4rO3z-ehTNA2TAieCGPmwHW1h3ZDSrVxkw")
         webhook.send("Na ekranie Forsena jest czerwono, chyba jest w netherze https://www.twitch.tv/forsen")
         webhook.send(file=discord.File('screenshot.png'))
