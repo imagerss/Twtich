@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from time import sleep
 import time
+import discord
 import math
 from PIL import Image
 from selenium.webdriver.common.action_chains import ActionChains
@@ -76,16 +77,20 @@ while True:
     print("Red pixels:", red_count)
     print("Green pixels:", green_count)
     print("Blue pixels:", blue_count)
-    print("Blue pixels:", send_cooldown)
+    print("Cooldown:", send_cooldown)
 
     if red_count>70 and send_cooldown==0:
         webhook = SyncWebhook.from_url("https://discord.com/api/webhooks/1085887517292761189/ctEiIk2FHrHm7SnQeFGjlZNCNFNAA0hmUi4rO3z-ehTNA2TAieCGPmwHW1h3ZDSrVxkw")
-        webhook.send("Hello World")
+        webhook.send("Na ekranie Forsena jest czerwono, chyba jest w netherze https://www.twitch.tv/forsen")
+        webhook.send(file=discord.File('screenshot.png'))
+
         send_cooldown=300
     # Pause the script for 5 seconds
-    if send_cooldown > 0:
+    if send_cooldown >= 5:
         send_cooldown-=5
-    time.sleep(5)
+    elif send_cooldown <5:
+        send_cooldown = send_cooldown - send_cooldown
+    time.sleep(2)
 
 
 # Close the browser
