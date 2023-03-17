@@ -38,7 +38,7 @@ button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-a-target
 button.click()
 
 
-checkbox = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '[data-test-selector="muted-segments-alert-overlay-presentation__dismiss-button"]')))
+checkbox = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '[data-a-target="player-settings-submenu-quality-option"]')))
 checkbox[1].click()
 #data-a-target="player-settings-button"
 #data-a-target="player-settings-menu-item-quality"
