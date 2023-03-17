@@ -1,16 +1,19 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from time import sleep
-import time
-import discord
-import math
-from PIL import Image
-from selenium.webdriver.common.action_chains import ActionChains
-from discord import SyncWebhook
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
-#player-overlay-mature-accept
+
+import time
+from time import sleep
+
+import discord
+
+
+from PIL import Image
+from PIL import ImageEnhance
+import pytesseract
+
 # Set the Chrome options to start the browser maximized
 chrome_options = Options()
 chrome_options.add_argument("--no-sandbox")
@@ -18,78 +21,88 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--window-size=1920,1080")
 
 driver = webdriver.Chrome(options=chrome_options, executable_path='/usr/local/bin/chromedriver')
-
+webdiscordlink="https://discord.com/api/webhooks/1086234013485772871/lPIWQeiTeRjIH50lBTGwlvzyj_0Y8ob8skSMyg154bdl51xlRDvJGp2jPW94n5VSv0VA"
 # Navigate to the Twitch channel and wait for the page to load
-driver.get('https://www.twitch.tv/lpl')
+driver.get('https://www.twitch.tv/videos/1764155703?t=04h23m59s')
 sleep(5)  # Wait for 5 seconds to allow the page to fully load
 
-# Find and click the "Zaakceptuj pliki cookie" button to dismiss the cookie banner
-# Find and click the "Zaakceptuj pliki cookie" button to dismiss the cookie banner
+wait = WebDriverWait(driver, 15)
+button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-a-target="player-overlay-mature-accept"]')))
+button.click()
+button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-test-selector="muted-segments-alert-overlay-presentation__dismiss-button"]')))
+button.click()
 
-#wait = WebDriverWait(driver, 15)
-#button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-a-target="player-overlay-mature-accept"]')))
-#button.click()
+button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-a-target="player-settings-button"]')))
+button.click()
+button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-a-target="player-settings-menu-item-quality"')))
+button.click()
 
 
-# Take a screenshot of the webpage and save it as a file named "screenshot.png"
+checkbox = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '[data-a-target="player-settings-submenu-quality-option"]')))
+
+checkbox[1].click()
+#data-a-target="player-settings-button"
+#data-a-target="player-settings-menu-item-quality"
+#class="ScCheckBoxInputBase-sc-vu7u7d-1 gBDDIa tw-radio__input"
+
+
 send_cooldown=0
-# Define the coordinates of the rectangle
-left = 240
-top = 234
-right = 1579
-bottom = 987
-pixel_sum = (right - left) * (bottom - top)
+x1, y1 = 556, 884
+x2, y2 = 861, 907
+
+x12, y12 = 1296, 246
+x22, y22 = 1567, 290
+
+words_to_check = ["can't",'see','this','shit','mist']
+
 while True:
-    # Your code here
-    driver.get_screenshot_as_file("screenshot.png")
-  
-
-
-    # Open the JPEG file
-    with Image.open("screenshot.png") as img:
-        # Convert the image to the RGB color space
-        img = img.convert("RGB")
-
-
-
-        # Initialize counters for red, green, and blue pixels
-        red_count = 0
-        green_count = 0
-        blue_count = 0
-
-        # Iterate over each pixel within the defined rectangle
-        for x in range(left, right):
-            for y in range(top, bottom):
-                # Get the RGB values for the pixel
-                r, g, b = img.getpixel((x, y))
-
-                # Increment the appropriate counter based on the dominant color component
-                if r > g and r > b:
-                    red_count += 1
-                elif g > r and g > b:
-                    green_count += 1
-                else:
-                    blue_count += 1
-
+    if send_cooldown == 0:
+        driver.get_screenshot_as_file("screenshot.png")
     
-    red_count=math.ceil((red_count/pixel_sum)*100)
-    green_count=math.ceil((green_count/pixel_sum)*100)
-    blue_count=math.ceil((blue_count/pixel_sum)*100)
-    
-    print(f"\rRed pixels: {red_count}%  Green pixels: {green_count}%  Blue pixels: {blue_count}%  Cooldown: {send_cooldown}s", end='', flush=True)
 
-    if red_count>80 and send_cooldown==0:
-        webhook = SyncWebhook.from_url("https://discord.com/api/webhooks/1086234013485772871/lPIWQeiTeRjIH50lBTGwlvzyj_0Y8ob8skSMyg154bdl51xlRDvJGp2jPW94n5VSv0VA")
-        webhook.send("Na ekranie Forsena jest czerwono... chyba jest w netherze")
-        webhook.send(file=discord.File('screenshot.png'))
 
-        send_cooldown=600
-    
-    if send_cooldown >= 2:
-        send_cooldown-=2
-    elif send_cooldown <2:
+        # Open the JPEG file
+        img = Image.open('screenshot.png')
+        cropped_img = img.crop((x1, y1, x2, y2))
+       # cropped_img2 = img.crop((x12, y12, x22, y22))
+
+        # Convert the cropped image to grayscale
+        cropped_img = cropped_img.convert('L')
+        enchancer = ImageEnhance.Contrast(cropped_img)
+        factor = 1.5
+        im_output = enchancer.enhance(factor)
+        im_output.save('cropped_img.png')
+       # cropped_img2 = cropped_img2.convert('L')
+       # cropped_img2.save('cropped_img2.png')
+        text = pytesseract.image_to_string(cropped_img)
+       # text2 = pytesseract.image_to_string(cropped_img2)
+        print(f'\rText: {text}', end='')
+       # print(f'\rText2: {text2}', end='')
+
+
+        num_words_found = 0
+        for word in words_to_check:
+            if word in text:
+                num_words_found += 1
+                if num_words_found >= 2:
+                    print("Nether detected sending Notification to discord")
+                    webhook = discord.SyncWebhook.from_url(webdiscordlink)
+                    embed = discord.Embed()
+                    embed.description = "Forsen jest w nether [stream](https://www.twitch.tv/forsen)."
+                    webhook.send(embed=embed, file=discord.File('screenshot.png'))
+                   # webhook.send(file=discord.File('screenshot.png'))
+                    #webhook.send("Forsen jest w nether")
+                    #webhook.send(file=discord.File('screenshot.png'))
+                    send_cooldown=20
+                    break
+    else:
+        print(f'\rCooldown: {send_cooldown}', end='')
+        
+    if send_cooldown >= 1:
+        send_cooldown-=1
+    elif send_cooldown <1:
         send_cooldown = send_cooldown - send_cooldown
-    #time.sleep(2)
+    time.sleep(1)
 
 
 # Close the browser
