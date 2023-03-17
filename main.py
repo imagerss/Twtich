@@ -81,8 +81,8 @@ while True:
 
     if red_count>20 and send_cooldown==0:
         webhook = SyncWebhook.from_url("https://discord.com/api/webhooks/1086229009915990066/fckP4Ef54KSKL3wNMfCrTjgA5biFKUx8YHhrsLwUdzXrq2Am7V4fU5OnxTbvNfesahce")
-        webhook.send("Na ekranie Forsena jest czerwono, chyba jest w netherze https://www.twitch.tv/forsen")
-       # webhook.send(file=discord.File('screenshot.png'))
+        webhook.send("Na ekranie Forsena jest czerwono... chyba jest w netherze \n https://www.twitch.tv/forsen")
+        webhook.send(file=discord.File('screenshot.png'))
 
         send_cooldown=300
     # Pause the script for 5 seconds
