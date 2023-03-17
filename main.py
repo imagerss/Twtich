@@ -26,9 +26,9 @@ sleep(5)  # Wait for 5 seconds to allow the page to fully load
 # Find and click the "Zaakceptuj pliki cookie" button to dismiss the cookie banner
 # Find and click the "Zaakceptuj pliki cookie" button to dismiss the cookie banner
 
-wait = WebDriverWait(driver, 15)
-button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-a-target="player-overlay-mature-accept"]')))
-button.click()
+#wait = WebDriverWait(driver, 15)
+#button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-a-target="player-overlay-mature-accept"]')))
+#button.click()
 
 
 # Take a screenshot of the webpage and save it as a file named "screenshot.png"
@@ -82,7 +82,7 @@ while True:
     if red_count>20 and send_cooldown==0:
         webhook = SyncWebhook.from_url("https://discord.com/api/webhooks/1085887517292761189/ctEiIk2FHrHm7SnQeFGjlZNCNFNAA0hmUi4rO3z-ehTNA2TAieCGPmwHW1h3ZDSrVxkw")
         webhook.send("Na ekranie Forsena jest czerwono, chyba jest w netherze https://www.twitch.tv/forsen")
-        webhook.send(file=discord.File('screenshot.png'))
+       # webhook.send(file=discord.File('screenshot.png'))
 
         send_cooldown=300
     # Pause the script for 5 seconds
