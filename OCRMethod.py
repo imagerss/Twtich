@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
-
+import configparser
 import time
 from time import sleep
 
@@ -19,11 +19,21 @@ chrome_options = Options()
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--window-size=1920,1080")
+# Create a ConfigParser object
+config = configparser.ConfigParser()
 
+# Read the INI file
+config.read('config.ini')
+
+# Get a value from the INI file
+value = config.get('discord', 'webhook_link')
+
+# Print the value
+print(value)
 driver = webdriver.Chrome(options=chrome_options, executable_path='/usr/local/bin/chromedriver')
-webdiscordlink="https://discord.com/api/webhooks/1086234013485772871/lPIWQeiTeRjIH50lBTGwlvzyj_0Y8ob8skSMyg154bdl51xlRDvJGp2jPW94n5VSv0VA"
+webdiscordlink=value
 # Navigate to the Twitch channel and wait for the page to load
-driver.get('https://www.twitch.tv/videos/1764155703?t=04h23m59s')
+driver.get('https://www.twitch.tv/videos/1766004801?t=01h19m43s')
 sleep(5)  # Wait for 5 seconds to allow the page to fully load
 
 wait = WebDriverWait(driver, 15)
@@ -49,8 +59,8 @@ send_cooldown=0
 x1, y1 = 556, 884
 x2, y2 = 861, 907
 
-x12, y12 = 1296, 246
-x22, y22 = 1567, 290
+x12, y12 = 1413, 289
+x22, y22 = 1561, 310
 
 words_to_check = ["can't",'see','this','shit','mist']
 
@@ -76,7 +86,7 @@ while True:
         text = pytesseract.image_to_string(cropped_img)
        # text2 = pytesseract.image_to_string(cropped_img2)
         print(f'\rText: {text}', end='')
-       # print(f'\rText2: {text2}', end='')
+        
 
 
         num_words_found = 0
@@ -84,16 +94,22 @@ while True:
             if word in text:
                 num_words_found += 1
                 if num_words_found >= 2:
-                    print("Nether detected sending Notification to discord")
+                    timeringame = img.crop((x12, y12, x22, y22))
+                    timeringame = timeringame.convert('L')
+                    timeringame.save('cropped_img2.png')
+                    ext2 = pytesseract.image_to_string(timeringame)
+
+                    print("Nether detected sending Notification to discord ")
                     webhook = discord.SyncWebhook.from_url(webdiscordlink)
                     embed = discord.Embed()
-                    embed.description = "Forsen jest w nether [stream](https://www.twitch.tv/forsen)."
+                    embed.description = "Forsen jest w nether [stream](https://www.twitch.tv/forsen)" 
                     webhook.send(embed=embed, file=discord.File('screenshot.png'))
                    # webhook.send(file=discord.File('screenshot.png'))
                     #webhook.send("Forsen jest w nether")
                     #webhook.send(file=discord.File('screenshot.png'))
                     send_cooldown=20
                     break
+        
     else:
         print(f'\rCooldown: {send_cooldown}', end='')
         
