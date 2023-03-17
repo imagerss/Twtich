@@ -3,27 +3,20 @@ from selenium.webdriver.common.by import By
 from time import sleep
 import time
 import math
-from selenium.webdriver.chrome.options import Options
 from PIL import Image
 from selenium.webdriver.common.action_chains import ActionChains
+
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import requests
 from discord import Webhook, RequestsWebhookAdapter
 #player-overlay-mature-accept
 # Set the Chrome options to start the browser maximized
-CHROMEDRIVER_PATH = '/usr/local/bin/chromedriver'
-WINDOW_SIZE = "1920,1080"
-chrome_options = Options()
 chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument("--headless")
-chrome_options.add_argument("--window-size=%s" % WINDOW_SIZE)
-chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--start-maximized')
 
 # Start the Chrome browser with the options
-driver = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH,
-                          chrome_options=chrome_options
-                         )
+driver = webdriver.Chrome(options=chrome_options)
 
 # Navigate to the Twitch channel and wait for the page to load
 driver.get('https://www.twitch.tv/videos/1766004801')
@@ -31,13 +24,11 @@ sleep(5)  # Wait for 5 seconds to allow the page to fully load
 
 # Find and click the "Zaakceptuj pliki cookie" button to dismiss the cookie banner
 # Find and click the "Zaakceptuj pliki cookie" button to dismiss the cookie banner
-actions = ActionChains(driver)
-wait = WebDriverWait(driver, 5)
-button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-a-target="player-overlay-mature-accept"]')))
 
-# click the button
+wait = WebDriverWait(driver, 15)
+button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-a-target="player-overlay-mature-accept"]')))
 button.click()
-actions.send_keys('f').perform()
+
 
 # Take a screenshot of the webpage and save it as a file named "screenshot.png"
 send_cooldown=0
@@ -52,17 +43,20 @@ while True:
         # Convert the image to the RGB color space
         img = img.convert("RGB")
 
-        # Get the dimensions of the image
-        width, height = img.size
+        # Define the coordinates of the rectangle
+        left = 240
+        top = 234
+        right = 1579
+        bottom = 987
 
         # Initialize counters for red, green, and blue pixels
         red_count = 0
         green_count = 0
         blue_count = 0
 
-        # Iterate over each pixel in the image
-        for x in range(width):
-            for y in range(height):
+        # Iterate over each pixel within the defined rectangle
+        for x in range(left, right):
+            for y in range(top, bottom):
                 # Get the RGB values for the pixel
                 r, g, b = img.getpixel((x, y))
 
