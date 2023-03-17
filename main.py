@@ -80,7 +80,7 @@ while True:
     print("Cooldown:", send_cooldown)
 
     if red_count>20 and send_cooldown==0:
-        webhook = SyncWebhook.from_url("https://discord.com/api/webhooks/1085887517292761189/ctEiIk2FHrHm7SnQeFGjlZNCNFNAA0hmUi4rO3z-ehTNA2TAieCGPmwHW1h3ZDSrVxkw")
+        webhook = SyncWebhook.from_url("https://discord.com/api/webhooks/1086229009915990066/fckP4Ef54KSKL3wNMfCrTjgA5biFKUx8YHhrsLwUdzXrq2Am7V4fU5OnxTbvNfesahce")
         webhook.send("Na ekranie Forsena jest czerwono, chyba jest w netherze https://www.twitch.tv/forsen")
        # webhook.send(file=discord.File('screenshot.png'))
 
