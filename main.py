@@ -33,6 +33,12 @@ sleep(5)  # Wait for 5 seconds to allow the page to fully load
 
 # Take a screenshot of the webpage and save it as a file named "screenshot.png"
 send_cooldown=0
+# Define the coordinates of the rectangle
+left = 240
+top = 234
+right = 1579
+bottom = 987
+pixel_sum = (right - left) * (bottom - top)
 while True:
     # Your code here
     driver.get_screenshot_as_file("screenshot.png")
@@ -44,11 +50,7 @@ while True:
         # Convert the image to the RGB color space
         img = img.convert("RGB")
 
-        # Define the coordinates of the rectangle
-        left = 240
-        top = 234
-        right = 1579
-        bottom = 987
+
 
         # Initialize counters for red, green, and blue pixels
         red_count = 0
@@ -69,28 +71,25 @@ while True:
                 else:
                     blue_count += 1
 
-    pixel_sum=green_count+red_count+blue_count
+    
     red_count=math.ceil((red_count/pixel_sum)*100)
     green_count=math.ceil((green_count/pixel_sum)*100)
     blue_count=math.ceil((blue_count/pixel_sum)*100)
     
-    print("Red pixels:", red_count)
-    print("Green pixels:", green_count)
-    print("Blue pixels:", blue_count)
-    print("Cooldown:", send_cooldown)
+    print(f"\rRed pixels: {red_count}%  Green pixels: {green_count}%  Blue pixels: {blue_count}%  Cooldown: {send_cooldown}s", end='', flush=True)
 
-    if red_count>20 and send_cooldown==0:
-        webhook = SyncWebhook.from_url("https://discord.com/api/webhooks/1086229009915990066/fckP4Ef54KSKL3wNMfCrTjgA5biFKUx8YHhrsLwUdzXrq2Am7V4fU5OnxTbvNfesahce")
-        webhook.send("Na ekranie Forsena jest czerwono... chyba jest w netherze \n https://www.twitch.tv/forsen")
+    if red_count>80 and send_cooldown==0:
+        webhook = SyncWebhook.from_url("https://discord.com/api/webhooks/1086234013485772871/lPIWQeiTeRjIH50lBTGwlvzyj_0Y8ob8skSMyg154bdl51xlRDvJGp2jPW94n5VSv0VA")
+        webhook.send("Na ekranie Forsena jest czerwono... chyba jest w netherze")
         webhook.send(file=discord.File('screenshot.png'))
 
-        send_cooldown=300
-    # Pause the script for 5 seconds
-    if send_cooldown >= 5:
-        send_cooldown-=5
-    elif send_cooldown <5:
+        send_cooldown=600
+    
+    if send_cooldown >= 2:
+        send_cooldown-=2
+    elif send_cooldown <2:
         send_cooldown = send_cooldown - send_cooldown
-    time.sleep(2)
+    #time.sleep(2)
 
 
 # Close the browser
