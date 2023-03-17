@@ -5,11 +5,10 @@ import time
 import math
 from PIL import Image
 from selenium.webdriver.common.action_chains import ActionChains
-
+from discord import SyncWebhook
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import requests
-from discord import Webhook, RequestsWebhookAdapter
+
 #player-overlay-mature-accept
 # Set the Chrome options to start the browser maximized
 chrome_options = webdriver.ChromeOptions()
@@ -79,7 +78,7 @@ while True:
     print("Blue pixels:", send_cooldown)
 
     if red_count>70 and send_cooldown==0:
-        webhook = Webhook.from_url("https://discord.com/api/webhooks/1085887517292761189/ctEiIk2FHrHm7SnQeFGjlZNCNFNAA0hmUi4rO3z-ehTNA2TAieCGPmwHW1h3ZDSrVxkw", adapter=RequestsWebhookAdapter())
+        webhook = SyncWebhook.from_url("https://discord.com/api/webhooks/1085887517292761189/ctEiIk2FHrHm7SnQeFGjlZNCNFNAA0hmUi4rO3z-ehTNA2TAieCGPmwHW1h3ZDSrVxkw")
         webhook.send("Hello World")
         send_cooldown=300
     # Pause the script for 5 seconds
