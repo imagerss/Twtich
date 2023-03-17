@@ -79,7 +79,7 @@ while True:
     print("Blue pixels:", blue_count)
     print("Cooldown:", send_cooldown)
 
-    if red_count>70 and send_cooldown==0:
+    if red_count>40 and send_cooldown==0:
         webhook = SyncWebhook.from_url("https://discord.com/api/webhooks/1085887517292761189/ctEiIk2FHrHm7SnQeFGjlZNCNFNAA0hmUi4rO3z-ehTNA2TAieCGPmwHW1h3ZDSrVxkw")
         webhook.send("Na ekranie Forsena jest czerwono, chyba jest w netherze https://www.twitch.tv/forsen")
         webhook.send(file=discord.File('screenshot.png'))
