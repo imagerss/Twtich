@@ -1,83 +1,79 @@
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
-
+import configparser
 import time
-from time import sleep
-
 import discord
-
-
-from PIL import Image
 from PIL import ImageEnhance
+import PIL
 import pytesseract
-
-# Set the Chrome options to start the browser maximized
+import selenium
+#Opcje chroma
 chrome_options = Options()
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--window-size=1920,1080")
 
-driver = webdriver.Chrome(options=chrome_options, executable_path='/usr/local/bin/chromedriver')
-webdiscordlink="https://discord.com/api/webhooks/1086234013485772871/lPIWQeiTeRjIH50lBTGwlvzyj_0Y8ob8skSMyg154bdl51xlRDvJGp2jPW94n5VSv0VA"
-# Navigate to the Twitch channel and wait for the page to load
-driver.get('https://www.twitch.tv/videos/1764155703?t=04h23m59s')
-sleep(5)  # Wait for 5 seconds to allow the page to fully load
+#Czytaj konfig
+config = configparser.ConfigParser()
+config.read('config.ini')
+value = config.get('discord', 'webhook_link')
+kanal = config.get('stream', 'kanal')
 
+#odpal chroma
+driver = selenium.webdriver.Chrome(options=chrome_options, executable_path='/usr/local/bin/chromedriver')
+
+#link do webhooka discorda
+webdiscordlink=value
+
+#Wejdź na kanał i poczekaj
+driver.get(kanal)
+time.sleep(5)
+
+#przeklikanie przez popupy
 wait = WebDriverWait(driver, 15)
 button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-a-target="player-overlay-mature-accept"]')))
 button.click()
-button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-test-selector="muted-segments-alert-overlay-presentation__dismiss-button"]')))
-button.click()
-
+#button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-test-selector="muted-segments-alert-overlay-presentation__dismiss-button"]')))
+#button.click()
 button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-a-target="player-settings-button"]')))
 button.click()
 button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-a-target="player-settings-menu-item-quality"')))
 button.click()
-
-
 checkbox = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '[data-a-target="player-settings-submenu-quality-option"]')))
-
 checkbox[1].click()
-#data-a-target="player-settings-button"
-#data-a-target="player-settings-menu-item-quality"
-#class="ScCheckBoxInputBase-sc-vu7u7d-1 gBDDIa tw-radio__input"
 
 
+#kordy do cropa
 send_cooldown=0
 x1, y1 = 556, 884
 x2, y2 = 861, 907
 
-x12, y12 = 1296, 246
-x22, y22 = 1567, 290
+x12, y12 = 1413, 289
+x22, y22 = 1561, 310
 
-words_to_check = ["can't",'see','this','shit','mist']
+x13, y13 = 241, 234
+x23, y23 = 1579, 987
 
+#czego szukamy
+words_to_check = ["cen't",'see','this','shit','mist']
+
+
+#pantal typu gigachad
 while True:
     if send_cooldown == 0:
-        driver.get_screenshot_as_file("screenshot.png")
-    
-
-
-        # Open the JPEG file
-        img = Image.open('screenshot.png')
+        driver.get_screenshot_as_file("screenshoty/screenshot.png")
+        img = PIL.Image.open('screenshoty/screenshot.png')
         cropped_img = img.crop((x1, y1, x2, y2))
-       # cropped_img2 = img.crop((x12, y12, x22, y22))
-
-        # Convert the cropped image to grayscale
         cropped_img = cropped_img.convert('L')
         enchancer = ImageEnhance.Contrast(cropped_img)
         factor = 1.5
         im_output = enchancer.enhance(factor)
-        im_output.save('cropped_img.png')
-       # cropped_img2 = cropped_img2.convert('L')
-       # cropped_img2.save('cropped_img2.png')
-        text = pytesseract.image_to_string(cropped_img)
-       # text2 = pytesseract.image_to_string(cropped_img2)
+        im_output.save('screenshoty/cropped_img.png')
+        text = pytesseract.image_to_string(cropped_img, lang='mc')
         print(f'\rText: {text}', end='')
-       # print(f'\rText2: {text2}', end='')
+        
 
 
         num_words_found = 0
@@ -85,16 +81,16 @@ while True:
             if word in text:
                 num_words_found += 1
                 if num_words_found >= 2:
-                    print("Nether detected sending Notification to discord")
+                    wynik = img.crop((x13, y13, x23, y23))
+                    wynik.save('screenshoty/wynik.png')
+                    print("Nether detected sending, notification to discord")
                     webhook = discord.SyncWebhook.from_url(webdiscordlink)
                     embed = discord.Embed()
-                    embed.description = "Forsen jest w nether [stream](https://www.twitch.tv/forsen)."
-                    webhook.send(embed=embed, file=discord.File('screenshot.png'))
-                   # webhook.send(file=discord.File('screenshot.png'))
-                    #webhook.send("Forsen jest w nether")
-                    #webhook.send(file=discord.File('screenshot.png'))
-                    send_cooldown=20
+                    embed.description = "Forsen jest w nether [stream](https://www.twitch.tv/forsen)" 
+                    webhook.send(embed=embed, file=discord.File('screenshoty/wynik.png'))
+                    send_cooldown=150
                     break
+        
     else:
         print(f'\rCooldown: {send_cooldown}', end='')
         
@@ -103,7 +99,4 @@ while True:
     elif send_cooldown <1:
         send_cooldown = send_cooldown - send_cooldown
     time.sleep(1)
-
-
-# Close the browser
 
